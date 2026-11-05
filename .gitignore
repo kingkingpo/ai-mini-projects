@@ -14,6 +14,3 @@ checkpoints/
 # Jupyter 체크포인트
 .ipynb_checkpoints/
 
-# 강사용 완성코드
-*_completion.ipynb
-results/
