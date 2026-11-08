@@ -15,7 +15,6 @@
 **문제**
 
 예측 시점에 사용할 수 없거나 누수가 발생할 수 있는 특성이 있습니다.
-
 - **검토한 선택지:** ___ (예: `casual`·`registered` 포함 여부, `atemp` 포함 여부, `windspeed` 제거 여부)
 - **최종 선택(사용·제외한 특성):** ___
 - **선택 근거(누수 확인, 예측 시점, 상관관계 등):** ___
@@ -47,10 +46,10 @@
 
 구매 세션이 전체의 약 15%뿐인 불균형 데이터이므로, Accuracy만으로 구매 클래스를 얼마나 잘 예측하는지 판단하기 어렵습니다.
 
-- **검토한 선택지:** ___ (예: Accuracy, 구매 클래스 F1, Precision, Recall)
-- **최종 선택한 주 지표와 보조 지표:** ___
-- **선택 근거(DummyClassifier와 LogisticRegression 결과, FP·FN 등):** ___
-- **감수한 한계 또는 추후 확인할 점:** ___
+- **검토한 선택지:** Accuracy, 구매 클래스 Precision, Recall, F1
+- **최종 선택한 주 지표와 보조 지표:** 주 지표는 구매 클래스 F1, 보조 지표는 Precision, Recall, Accuracy
+- **선택 근거(DummyClassifier와 LogisticRegression 결과, FP·FN 등):** DummyClassifier는 Validation Accuracy가 0.845였지만 구매를 한 건도 찾아내지 못해 F1이 0이었다. LogisticRegression도 Accuracy는 0.882였으나 구매 클래스 Recall은 0.367, F1은 0.490으로 실제 구매를 많이 놓쳤다. 따라서 Accuracy만 보지 않고 Precision과 Recall을 함께 반영하는 F1을 주 지표로 삼았다.
+- **감수한 한계 또는 추후 확인할 점:** F1은 FP와 FN을 같은 비중으로 다루므로 실제 서비스에서 두 오류의 비용이 다르면 최적 지표가 달라질 수 있다. 서비스 목적에 맞춰 Precision·Recall 우선순위를 정하고 임계값을 추가 검증할 필요가 있다.
 
 **분석 근거:** `02_classification_data_analysis.md`, `02_classification_model_analysis.md`
 
@@ -60,10 +59,10 @@
 
 기본 손실 함수로 학습한 MLP-A와 클래스 가중 손실을 적용한 MLP-B를 비교하고, 구매 확률을 0/1로 구분하는 임계값(0.3·0.5·0.7)을 선택해야 합니다.
 
-- **검토한 선택지:** ___ (MLP-A / MLP-B의 학습 결과, 임계값 0.3·0.5·0.7)
-- **최종 선택한 MLP 설정·임계값·재학습 에포크:** ___
-- **선택 근거(Validation F1, Precision·Recall, FP·FN 및 가중 손실의 영향):** ___
-- **LogisticRegression과 비교했을 때 선택한 MLP의 특징:** ___
-- **감수한 한계 또는 추후 개선 방향:** ___
+- **검토한 선택지:** MLP-A와 MLP-B를 각각 임계값 0.3, 0.5, 0.7에서 평가
+- **최종 선택한 MLP 설정·임계값·재학습 에포크:** 클래스 가중 BCE를 적용한 MLP-B, 임계값 0.5, 17 epoch
+- **선택 근거(Validation F1, Precision·Recall, FP·FN 및 가중 손실의 영향):** MLP-B와 임계값 0.5 조합이 Validation F1 0.645로 비교한 조합 중 가장 높았다. MLP-B의 가중 손실은 MLP-A보다 구매 고객 Recall을 높였지만 Precision은 낮춰 오탐이 늘었다. 임계값 0.3은 FN을 줄이는 대신 FP가 283건으로 늘었고, 0.7은 FP를 99건으로 줄이는 대신 FN이 111건으로 늘어 0.5를 선택했다.
+- **LogisticRegression과 비교했을 때 선택한 MLP의 특징:** MLP-B의 Validation F1은 0.645로 LogisticRegression의 0.490보다 높았고 Recall도 0.734로 더 높았다. 반면 Precision은 0.575로 LogisticRegression의 0.734보다 낮아 오탐이 더 많았다.
+- **감수한 한계 또는 추후 개선 방향:** 구매 고객을 더 많이 찾는 대신 오탐이 발생하는 점을 감수했다. 임계값은 0.3, 0.5, 0.7만 비교했으며, 예측 확률의 보정 여부도 검증하지 않았으므로 운영 목적에 맞는 세밀한 임계값 탐색과 확률 보정 평가가 필요하다.
 
 **분석 근거:** `02_classification_model_analysis.md`
