@@ -15,10 +15,10 @@
 **문제**
 
 예측 시점에 사용할 수 없거나 누수가 발생할 수 있는 특성이 있습니다.
-- **검토한 선택지:** ___ (예: `casual`·`registered` 포함 여부, `atemp` 포함 여부, `windspeed` 제거 여부)
-- **최종 선택(사용·제외한 특성):** ___
-- **선택 근거(누수 확인, 예측 시점, 상관관계 등):** ___
-- **감수한 한계 또는 추후 확인할 점:** ___
+- **검토한 선택지:** casual·registered를 입력에 포함할지, temp와 atemp를 함께 쓸지, 상관관계가 낮은 windspeed를 제외할지 검토했다.
+- **최종 선택(사용·제외한 특성):** season, yr, mnth, hr, holiday, weekday, workingday, weathersit, temp, hum, windspeed를 사용하고, 파생 특성 is_commute_hour를 추가했다. cnt, casual, registered, instant, dteday, atemp는 제외했다.
+- **선택 근거(누수 확인, 예측 시점, 상관관계 등):** casual + registered == cnt이므로 두 특성을 쓰면 타깃 누수가 발생할 수 있고, atemp는 temp와 상관계수가 0.992로 정보가 매우 유사해 제외했다. windspeed는 cnt와의 선형 상관관계가 낮아도 다른 특성과 함께 예측에 도움될 수 있어 남겼다.
+- **감수한 한계 또는 추후 확인할 점:** 상관관계만으로 특성의 유용성을 단정할 수 없으므로, 최종 특성의 효과는 Validation 성능으로 확인하고 Test 데이터로 최종 평가한다.
 
 **분석 근거:** `01_regression_data_analysis.md`
 
@@ -28,11 +28,11 @@
 
 서로 다른 회귀 모델 및 설정 중 하나를 최종 모델로 선택해야 합니다.
 
-- **비교한 모델·설정:** ___
-- **최종 선택한 모델·설정:** ___
-- **선택 근거(Validation MAE, 과대적합 가능성, 시간대별 오류 등):** ___
-- **선택 모델의 장점:** ___
-- **남아 있는 한계 또는 개선 방향:** ___
+- **비교한 모델·설정:**  DummyRegressor, LinearRegression, DecisionTreeRegressor(max_depth=3, 6, 12), RandomForestRegressor(n_estimators=50, max_depth=10 및 n_estimators=100, max_depth=15)
+- **최종 선택한 모델·설정:** RandomForestRegressor(n_estimators=100, max_depth=15)
+- **선택 근거(Validation MAE, 과대적합 가능성, 시간대별 오류 등):** 후보 중 Validation MAE가 가장 낮았다(64.323). Train MAE(22.155)와 차이가 있어 과대적합 가능성은 유의했으며, 두 후보 모델 모두 17~18시에 오차가 크게 나타났다.
+- **선택 모델의 장점:** 비교한 후보 중 Validation 예측 오차가 가장 낮고, Validation R²도 가장 높았다(0.832).
+- **남아 있는 한계 또는 개선 방향:** Train과 Validation 성능 차이가 있고, 17~18시 수요 예측 오차가 크다. 해당 시간대의 수요 변동을 줄일 추가 특성이나 모델 설정을 검토할 수 있다.
 
 **분석 근거:** `01_regression_model_analysis.md`
 
