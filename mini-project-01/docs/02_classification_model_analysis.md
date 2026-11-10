@@ -26,7 +26,7 @@ ___
 - **손실 함수 / 옵티마이저:** `BCEWithLogitsLoss` / Adam
 - **학습 조건:** 최대 25 epoch, batch size 256, learning rate 0.001
 - **Validation F1이 가장 높았던 에포크:** 25
-- **선택된 MLP-A의 Train F1 / Validation F1:**0.694	/ 0.621
+- **선택된 MLP-A의 Train F1 / Validation F1:** 0.709 / 0.633
 - **MLP-A Validation Precision / Recall:** 0.717 /0.566
 
 **분석:** Train loss와 Train·Validation F1 그래프에서 확인한 학습 경향을 작성합니다.  
@@ -37,9 +37,9 @@ ___
 
 - **MLP-B 변경 사항:** 양성 클래스 가중치(`pos_weight`)를 적용한 `BCEWithLogitsLoss`
 - **Train 데이터의 `pos_weight`(미구매 수 ÷ 구매 수):** 5.46
-- **MLP-B의 최적 에포크:** 22
+- **MLP-B의 최적 에포크(최고 Validation F1 기준):** 17
 - **MLP-B Train F1 / Validation F1:** 0.692 / 0.645
-- **MLP-B Validation Precision / Recall:** 0.575 / 0.566
+- **MLP-B Validation Precision / Recall:** 0.575 / 0.734
 - **MLP-A와 MLP-B의 Validation F1 차이:** 0.633 - 0.645 = - 0.012 
 - **LogisticRegression과 두 MLP의 성능 비교에서 발견한 점:** LogisticRegression보다 두 MLP의 Validation F1이 높았다. 
 - **Train·Validation F1 차이에서 관찰한 점:** DummyClassifier 는 0 이지만 Precision, Recall 이 0 이라 나온 값이기에 의미가 없다. LogisticRegression가 두 MLP 보다 Train·Validation F1 차이가 낮다.
